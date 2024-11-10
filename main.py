@@ -292,7 +292,7 @@ class MSNAApp:
         else:
             if self.count == 0:
                 self.win.pushButton.setText("Burst(Left Key)")
-                self.win.pushButton_2.setText("No Burst(DOWN Key)")
+                self.win.pushButton_2.setText("No Burst(Down Key)")
                 self.win.pushButton_5.setText("Error(Right Key)")
                 self.update_region()
                 self.region.setMovable(False)
