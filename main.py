@@ -8,6 +8,9 @@ MSNAApp
 
 概要:
 このアプリケーションは、ECG、BP、MSNAのデータを表示し、解析するためのツールです。
+
+exe化:
+pyinstaller --onefile --windowed --icon=image/icon.ico --add-data "main.ui;." --add-data "image/icon.ico;image" --hidden-import openpyxl.cell._writer main.py
 """
 
 from PyQt5 import QtWidgets, uic, QtGui
@@ -17,14 +20,26 @@ import autoCheck
 import numpy as np
 import pandas as pd
 import os
+import sys
 
 class MSNAApp:
     def __init__(self, ui_file="main.ui"):
         # アプリケーションの初期化
         self.app = pg.mkQApp("MSNAAnalyzer")
+
+        # 実行環境に応じたファイルパスの取得
+        if getattr(sys, 'frozen', False):
+            # PyInstallerで打包された場合
+            base_path = sys._MEIPASS
+        else:
+            # 通常のスクリプト実行の場合
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        ui_file = os.path.join(base_path, "main.ui")
+        icon_file = os.path.join(base_path, "image", "icon.ico")
+
         self.win = uic.loadUi(ui_file)
         self.win.setWindowTitle("MSNAAnalyzer v.1.0.0")
-        self.win.setWindowIcon(QtGui.QIcon(r"image\icon.png"))
+        self.win.setWindowIcon(QtGui.QIcon(icon_file))
 
         # 初期化するグローバル変数
         self.count = 0 # カウント変数（処理の進行状況を追跡）
