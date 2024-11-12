@@ -4,7 +4,7 @@ MSNAApp
 作成日: 2024年11月9日
 連絡先: z510389750@gmail.com
 ライセンス: MIT
-バージョン: 1.0.1
+バージョン: 1.0.2
 
 概要:
 このアプリケーションは、ECG、BP、MSNAのデータを表示し、解析するためのツールです。
@@ -12,6 +12,7 @@ MSNAApp
 更新履歴:
 バージョン1.0.0: 初版
 バージョン1.0.1: Downボタン表示の修正; 出力デフォルトファイル名の異常出力の修正
+バージョン1.0.2: 「Start」ボタン押した後の「Auto」ボタンの無効化
 
 exe化:
 pyinstaller --onefile --windowed --icon=image/icon.ico --add-data "main.ui;." --add-data "image/icon.ico;image" --hidden-import openpyxl.cell._writer main.py
@@ -43,7 +44,7 @@ class MSNAApp:
         icon_file = os.path.join(base_path, "image", "icon.ico")
 
         self.win = uic.loadUi(ui_file)
-        self.win.setWindowTitle("MSNAAnalyzer v1.0.1")
+        self.win.setWindowTitle("MSNAAnalyzer v1.0.2")
         self.win.setWindowIcon(QtGui.QIcon(icon_file))
 
         # 初期化するグローバル変数
@@ -299,6 +300,7 @@ class MSNAApp:
                 self.win.pushButton.setText("Burst(Left Key)")
                 self.win.pushButton_2.setText("No Burst(Down Key)")
                 self.win.pushButton_5.setText("Error(Right Key)")
+                self.win.pushButton_4.setEnabled(False)
                 self.update_region()
                 self.region.setMovable(False)
                 self.times = 0
@@ -428,6 +430,7 @@ class MSNAApp:
         self.win.pushButton_5.setEnabled(True)
 
     def button_clicked(self):
+        """左下ボタン「Start」が押されたときの処理"""
         if self.count >= len(self.peaks_ECG_arg) - 1:
             # Excelに保存
             self.saveExcel()
@@ -435,7 +438,7 @@ class MSNAApp:
             self.start(1)
 
     def button2_clicked(self):
-        """後退ボタンが押されたときの処理"""
+        """下中間ボタン「Back」が押されたときの処理"""
         if self.count == 0:
             self.back()
         elif self.count >= len(self.peaks_ECG_arg) - 1:
@@ -444,7 +447,7 @@ class MSNAApp:
             self.start(0)
             
     def button5_clicked(self):
-        """閉じるが押されたときの処理"""
+        """右下ボタン「Close」が押されたときの処理"""
         if self.count == 0:
             self.win.close()
         elif self.count >= len(self.peaks_ECG_arg) - 1:
