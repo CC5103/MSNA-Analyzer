@@ -15,7 +15,8 @@ MSNAApp
 バージョン1.0.2: 「Start」ボタン押した後の「Auto」ボタンの無効化
 
 exe化:
-pyinstaller --onefile --windowed --icon=image/icon.ico --add-data "main.ui;." --add-data "image/icon.ico;image" --hidden-import openpyxl.cell._writer main.py
+pyinstaller --onefile --windowed --icon=image/icon.ico --add-data "main.ui;." --add-data "image/icon.ico;image" --hidden-import openpyxl.cell._writer --name MSNAAnalyzer main.py
+
 """
 
 from PyQt5 import QtWidgets, uic, QtGui
