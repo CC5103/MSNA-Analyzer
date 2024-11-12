@@ -71,7 +71,6 @@ class MSNAApp:
 
         # プロットの初期化
         pg.setConfigOptions(antialias=True) # アンチエイリアスを有効にする
-        self.region = pg.LinearRegionItem() # 選択範囲を示す線形領域アイテム
         self.initialize_plots()
 
         # UIの各要素とメソッドを接続
@@ -81,7 +80,6 @@ class MSNAApp:
         self.win.pushButton_2.clicked.connect(self.button2_clicked)
         self.win.pushButton_3.clicked.connect(self.config)
         self.win.pushButton_5.clicked.connect(self.button5_clicked)
-        self.region.sigRegionChanged.connect(self.update_region)
         self.win.progressBar.setMinimum(0)
         self.win.progressBar.setMaximum(100)
 
@@ -140,6 +138,8 @@ class MSNAApp:
         self.min_val, self.max_val = self.region.getRegion()
         self.min_val = round(self.min_val)
         self.max_val = round(self.max_val)
+        self.win.lineEdit_9.setText(str(self.min_val))
+        self.win.lineEdit_10.setText(str(self.max_val))
 
     def drawCalculation(self, select):
         """グラフのデータを計算して描画
@@ -214,6 +214,7 @@ class MSNAApp:
         self.count = 0
         self.drawCalculation(0)
         self.region = pg.LinearRegionItem([0.5 * self.fs, 1.5 * self.fs])
+        self.region.sigRegionChanged.connect(self.update_region) # regionnの選択範囲の変更を監視
         self.region.setBrush(pg.mkBrush(color=(0, 0, 0, 0)))
         self.MSNA_plot.addItem(self.region)
         self.win.lineEdit_5.setText(self.file)
@@ -257,6 +258,7 @@ class MSNAApp:
                 self.BP = BP
                 self.MSNA_ = MSNA
                 self.restart()
+                self.update_region()
             except ValueError as e:
                 msg_box = QtWidgets.QMessageBox(self.win)
                 msg_box.setWindowTitle("Error")
@@ -322,11 +324,11 @@ class MSNAApp:
                     self.MSNAheight_output.append(max(self.F_MSNA[self.r_lift:self.r_right + 1]))
                     self.MSNAAera_output.append(sum(self.F_MSNA[self.r_lift:self.r_right + 1]))
                 
-                    self.win.lineEdit_6.setText(str(round(self.HR_output[-1], 3)))
-                    self.win.lineEdit_7.setText(str(round(self.DBP_output[-1], 3)))
-                    self.win.lineEdit_8.setText(str(round(self.SBP_output[-1], 3)))
-                    self.win.lineEdit_3.setText(str(round(self.MSNAheight_output[-1], 5)))
-                    self.win.lineEdit_4.setText(str(round(self.MSNAAera_output[-1], 5)))
+                    self.win.lineEdit_6.setText(str(round(self.HR_output[-1], 2)))
+                    self.win.lineEdit_7.setText(str(round(self.DBP_output[-1], 2)))
+                    self.win.lineEdit_8.setText(str(round(self.SBP_output[-1], 2)))
+                    self.win.lineEdit_3.setText(str(round(self.MSNAheight_output[-1], 2)))
+                    self.win.lineEdit_4.setText(str(round(self.MSNAAera_output[-1], 2)))
 
                 self.Burst_check(select)
                 if self.count < len(self.peaks_ECG_arg) - 2:
