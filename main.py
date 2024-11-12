@@ -4,7 +4,7 @@ MSNAApp
 作成日: 2024年11月9日
 連絡先: z510389750@gmail.com
 ライセンス: GPL-3.0
-バージョン: 1.0.2
+バージョン: 1.0.3
 
 概要:
 このアプリケーションは、ECG、BP、MSNAのデータを表示し、解析するためのツールです。
@@ -13,6 +13,7 @@ MSNAApp
 バージョン1.0.0: 初版
 バージョン1.0.1: Downボタン表示の修正; 出力デフォルトファイル名の異常出力の修正
 バージョン1.0.2: 「Start」ボタン押した後の「Auto」ボタンの無効化
+バージョン1.0.3: 領域を移動する際の表示機能「Cur left」および「Cur right」を追加しました
 
 exe化:
 pyinstaller --onefile --windowed --icon=image/icon.ico --add-data "main.ui;." --add-data "image/icon.ico;image" --hidden-import openpyxl.cell._writer --name MSNAAnalyzer main.py
@@ -45,7 +46,7 @@ class MSNAApp:
         icon_file = os.path.join(base_path, "image", "icon.ico")
 
         self.win = uic.loadUi(ui_file)
-        self.win.setWindowTitle("MSNAAnalyzer v1.0.2")
+        self.win.setWindowTitle("MSNAAnalyzer v1.0.3")
         self.win.setWindowIcon(QtGui.QIcon(icon_file))
 
         # 初期化するグローバル変数
