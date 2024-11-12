@@ -61,7 +61,7 @@ MSNA-Analyzer is a tool designed for the analysis and visualization of muscle sy
 - Support additional data formats for import and export.
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the GPL-3.0 License. See the [LICENSE](LICENSE) file for more details.
 
 ## Acknowledgments
 Thanks to all contributors and testers for their valuable feedback.
