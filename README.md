@@ -41,20 +41,6 @@ MSNA-Analyzer is a tool designed for the analysis and visualization of muscle sy
 2. **Action**: Use the arrow keys to manually identify MSNA bursts or use the interface for precise control.
 3. **Output**: A results file will be generated in both `txt` and `Excel` formats.
 
-## Changelog
-
-### v1.0.2
-- Disabled the "Auto" button after pressing the "Start" button.
-
-### v1.0.1
-- UI Fix: Improved clarity by modifying the window title.
-- Enhancement: Enhanced the default filename generation for Excel file saves.
-
-### v1.0.0 (Initial Release)
-- Introduced automatic burst detection.
-- Implemented manual burst identification.
-- Supported output in `txt` and `Excel` formats.
-
 ## Future Plans
 - Add more algorithms for burst detection.
 - Improve the user interface for better usability.
