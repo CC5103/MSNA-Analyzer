@@ -4,7 +4,7 @@ MSNAApp
 作成日: 2024年11月9日
 連絡先: z510389750@gmail.com
 ライセンス: GPL-3.0
-バージョン: 1.0.3
+バージョン: 1.0.4
 
 概要:
 このアプリケーションは、ECG、BP、MSNAのデータを表示し、解析するためのツールです。
@@ -14,6 +14,7 @@ MSNAApp
 バージョン1.0.1: Downボタン表示の修正; 出力デフォルトファイル名の異常出力の修正
 バージョン1.0.2: 「Start」ボタン押した後の「Auto」ボタンの無効化
 バージョン1.0.3: 領域を移動する際の表示機能「Cur left」および「Cur right」を追加しました
+バージョン1.0.4: グラフプロットする際のｘ軸の異常移動問題の修正; x軸設定変更により処理速度10倍向上
 
 exe化:
 pyinstaller --onefile --windowed --icon=image/icon.ico --add-data "main.ui;." --add-data "image/icon.ico;image" --hidden-import openpyxl.cell._writer --name MSNAAnalyzer main.py
@@ -46,7 +47,7 @@ class MSNAApp:
         icon_file = os.path.join(base_path, "image", "icon.ico")
 
         self.win = uic.loadUi(ui_file)
-        self.win.setWindowTitle("MSNAAnalyzer v1.0.3")
+        self.win.setWindowTitle("MSNAAnalyzer v1.0.4")
         self.win.setWindowIcon(QtGui.QIcon(icon_file))
 
         # 初期化するグローバル変数
@@ -87,9 +88,6 @@ class MSNAApp:
         # キーイベントのハンドラを接続
         self.win.keyPressEvent = self.handle_key_press
         
-        # プロットの範囲変更イベントを接続
-        self.ECG_plot.sigXRangeChanged.connect(self.on_xrange_changed)
-        
     def on_xrange_changed(self, viewbox):
         """X軸の範囲が変更されたときの処理
         Args:
@@ -122,10 +120,14 @@ class MSNAApp:
         self.ECG_plot.setRange(xRange=[0, 30000], padding=0)
         self.BP_plot.setRange(xRange=[0, 30000], padding=0)
         self.MSNA_plot.setRange(xRange=[0, 30000], padding=0)
+        self.on_xrange_changed(self.ECG_plot.getViewBox())
+        
+        # プロットの範囲変更イベントを接続
+        self.ECG_plot.sigXRangeChanged.connect(self.on_xrange_changed)
         
         # プロットの同期（範囲変更時）
-        self.ECG_plot.setXLink(self.BP_plot)
-        self.BP_plot.setXLink(self.MSNA_plot)
+        self.BP_plot.setXLink(self.ECG_plot)
+        self.MSNA_plot.setXLink(self.ECG_plot)
 
         # 各データ用のカーブを作成
         self.curve_ECG = self.ECG_plot.plot(pen='y')
@@ -159,6 +161,7 @@ class MSNAApp:
                 self.curve_MSNA.clear()
                 self.ECG_plot.removeItem(self.curve_ECGpeaks)
                 self.BP_plot.removeItem(self.curve_dbp)
+                self.on_xrange_changed(self.ECG_plot.getViewBox())
 
         # UIから値を取得
         self.fs = self.win.spinBox.value()
@@ -333,9 +336,7 @@ class MSNAApp:
 
                 self.Burst_check(select)
                 if self.count < len(self.peaks_ECG_arg) - 2:
-                    self.ECG_plot.setRange(xRange=xRange, yRange=[min(self.F_ECG), max(self.F_ECG)], padding=0)
-                    self.BP_plot.setRange(yRange=[min(self.F_BP), max(self.F_BP)], padding=0)
-                    self.MSNA_plot.setRange(yRange=[min(self.F_MSNA), max(self.F_MSNA)], padding=0)
+                    self.ECG_plot.setRange(xRange=xRange, padding=0)
                     self.region = pg.LinearRegionItem([self.min_val + self.peaks_ECG_arg[self.count], self.max_val + self.peaks_ECG_arg[self.count]])
                     self.region.setBrush(pg.mkBrush(color=(0, 0, 0, 0)))
                     self.MSNA_plot.addItem(self.region)
@@ -360,15 +361,14 @@ class MSNAApp:
         self.win.lineEdit_5.setText("Auto Burst Check")
         self.update_region()
         self.region.setMovable(False)
+        self.on_xrange_changed(self.ECG_plot.getViewBox())
         self.times = 0
         self.count = 1
         autoCheck_ = autoCheck.auto_check(self.F_MSNA, self.fs, self.Baseline)
         for i in range(len(self.peaks_ECG_arg) - 1):
             # プロットの範囲を設定
             xRange = [self.peaks_ECG_arg[i], (self.max_range-self.min_range) + self.peaks_ECG_arg[i]]
-            self.ECG_plot.setRange(xRange=xRange, yRange=[min(self.F_ECG), max(self.F_ECG)], padding=0)
-            self.BP_plot.setRange(yRange=[min(self.F_BP), max(self.F_BP)], padding=0)
-            self.MSNA_plot.setRange(yRange=[min(self.F_MSNA), max(self.F_MSNA)], padding=0)
+            self.ECG_plot.setRange(xRange=xRange, padding=0)
             # バーストのチェック
             self.r_lift = self.peaks_ECG_arg[i]
             self.r_right = self.peaks_ECG_arg[i + 1]
