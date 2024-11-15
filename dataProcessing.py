@@ -4,18 +4,18 @@ import numpy as np
 import math
 
 class data_set:
-    def __init__(self, ECG: list, BP: list, MSNA: list, fs: int):
+    def __init__(self, ECG: list, BP: list, iMSNA: list, fs: int):
         """読み込んだデータにファイルタをかけることやピークを検出することができる
         
         Args:
             ECG (list): ECGのデータ
             BP (list): BPのデータ
-            MSNA (list): rMSNAのデータ
+            iMSNA (list): rMSNAのデータ
             fs (int): サンプリング周波数
         """
         self.ECG = ECG
         self.BP = BP
-        self.MSNA = MSNA
+        self.iMSNA = iMSNA
         self.fs = fs
     def zerofilter_sci(self, n: int, fc: int, Type: str, data: list) -> list:
         """バターワースフィルタをかける
@@ -50,17 +50,6 @@ class data_set:
         F_ECG = self.zerofilter_sci(2, [0.3, 28], "band", self.ECG)
         F_BP = self.zerofilter_sci(2, 10, "low", self.BP)
 
-        timeConstant = 0.1
-        fc = 1/(2*math.pi*timeConstant)
-        alpha = 2 * np.pi *  fc * (1/self.fs) / (2 * np.pi *  fc * (1/self.fs) + 1)
-        MSNA_abs = np.abs(self.MSNA)
-        phase = np.angle(MSNA_abs)
-        F_MSNA = np.zeros_like(MSNA_abs)
-        for n in range(1, len(MSNA_abs)):
-            F_MSNA[n] = alpha * MSNA_abs[n] + (1 - alpha) * F_MSNA[n - 1]
-        F_MSNA = F_MSNA * np.exp(1j * phase)
-        F_MSNA = np.real(F_MSNA)
-
         # Find peaks
         peaks_ECG, _ = find_peaks(F_ECG, np.mean(F_ECG[F_ECG>0])*2.9)
         peaks_ECG_diff = np.diff(peaks_ECG)
@@ -75,7 +64,7 @@ class data_set:
 
         F_ECG = F_ECG[peaks_ECG[0]:peaks_ECG[-1]+1]
         F_BP = F_BP[peaks_ECG[0]:peaks_ECG[-1]+1]
-        F_MSNA = F_MSNA[peaks_ECG[0]:peaks_ECG[-1]+1]
+        F_iMSNA = self.iMSNA[peaks_ECG[0]:peaks_ECG[-1]+1]
         
         peaks_ECG = peaks_ECG - peaks_ECG[0]
         
@@ -85,7 +74,7 @@ class data_set:
             sbp_arg.append(np.argmax(F_BP[peaks_ECG[i-1]:(peaks_ECG[i-1]+(peaks_ECG[i]-peaks_ECG[i-1])//2)]) + peaks_ECG[i-1])
             dbp_arg.append(np.argmin(F_BP[peaks_ECG[i-1]:(peaks_ECG[i-1]+(peaks_ECG[i]-peaks_ECG[i-1])//2)]) + peaks_ECG[i-1])
 
-        return F_ECG, F_BP, F_MSNA, peaks_ECG, sbp_arg, dbp_arg
+        return F_ECG, F_BP, F_iMSNA, peaks_ECG, sbp_arg, dbp_arg
     
 if __name__ == "__main__":
     pass
