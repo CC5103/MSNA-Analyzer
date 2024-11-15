@@ -7,7 +7,7 @@ MSNAApp
 バージョン: 1.0.5
 
 概要:
-このアプリケーションは、ECG、BP、MSNAのデータを表示し、解析するためのツールです。
+このアプリケーションは、ECG、BP、iMSNAのデータを表示し、解析するためのツールです。
 
 更新履歴:
 バージョン1.0.0: 初版
@@ -155,12 +155,12 @@ class MSNAApp:
         self.fs = self.win.spinBox.value()
         self.ECGTrig = self.win.doubleSpinBox_2.value()
         self.Baseline = self.win.doubleSpinBox_3.value()
-        self.MSNA_cal = self.win.doubleSpinBox_4.value()
+        self.iMSNA_cal = self.win.doubleSpinBox_4.value()
 
         # MSNAの補正
-        dataSet = dataProcessing.data_set(self.ECG, self.BP, self.MSNA_, self.fs)
-        self.F_ECG, self.F_BP, self.F_MSNA_, self.peaks_ECG_arg, self.sbp_arg, self.dbp_arg = dataSet.read_data()
-        self.F_MSNA = [x / self.MSNA_cal for x in self.F_MSNA_]
+        dataSet = dataProcessing.data_set(self.ECG, self.BP, self.iMSNA_, self.fs)
+        self.F_ECG, self.F_BP, self.F_iMSNA_, self.peaks_ECG_arg, self.sbp_arg, self.dbp_arg = dataSet.read_data()
+        self.F_MSNA = [x / self.iMSNA_cal for x in self.F_iMSNA_]
         self.peaks_ECG_arg_diff = np.diff(self.peaks_ECG_arg)
 
         # データをプロット
@@ -248,7 +248,7 @@ class MSNAApp:
         """ファイル選択ダイアログ"""
         self.file, _ = QtWidgets.QFileDialog.getOpenFileName(self.win, "Select a file", "", "Text Files (*.txt)")
         if self.file:
-            ECG, BP, MSNA = [], [], []
+            ECG, BP, iMSNA = [], [], []
             try:
                 with open(self.file, "r") as f:
                     for line in f:
@@ -257,10 +257,10 @@ class MSNAApp:
                             raise ValueError("Invalid file format")
                         ECG.append(float(data[0]))
                         BP.append(float(data[1]))
-                        MSNA.append(float(data[2]))
+                        iMSNA.append(float(data[2]))
                 self.ECG = ECG
                 self.BP = BP
-                self.MSNA_ = MSNA
+                self.iMSNA_ = iMSNA
                 self.restart()
                 self.update_region()
             except ValueError as e:
@@ -415,9 +415,9 @@ class MSNAApp:
                 "DBP": self.DBP_output,
                 "SBP time": self.SBPtime_output,
                 "SBP": self.SBP_output,
-                "MSNA time": self.MSNAtime_output,
-                "MSNA height": self.MSNAheight_output,
-                "MSNA area": self.MSNAAera_output,
+                "iMSNA time": self.MSNAtime_output,
+                "iMSNA height": self.MSNAheight_output,
+                "iMSNA area": self.MSNAAera_output,
                 "Burst": self.Burst_output,
             })
             
