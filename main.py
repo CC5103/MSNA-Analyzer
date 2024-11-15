@@ -4,7 +4,7 @@ MSNAApp
 作成日: 2024年11月9日
 連絡先: z510389750@gmail.com
 ライセンス: GPL-3.0
-バージョン: 1.0.4
+バージョン: 1.0.5
 
 概要:
 このアプリケーションは、ECG、BP、MSNAのデータを表示し、解析するためのツールです。
@@ -15,6 +15,7 @@ MSNAApp
 バージョン1.0.2: 「Start」ボタン押した後の「Auto」ボタンの無効化
 バージョン1.0.3: 領域を移動する際の表示機能「Cur left」および「Cur right」を追加しました
 バージョン1.0.4: グラフプロットする際のｘ軸の異常移動問題の修正; x軸設定変更により処理速度10倍向上
+バージョン1.0.5: アイコンの円角化処理; Restartした際に記録データされたデータリセットしない問題の修正
 
 exe化:
 pyinstaller --onefile --windowed --icon=image/icon.ico --add-data "main.ui;." --add-data "image/icon.ico;image" --hidden-import openpyxl.cell._writer --name MSNAAnalyzer main.py
@@ -57,19 +58,6 @@ class MSNAApp:
         self.curve_dbp = None  # DBP（拡張期血圧）のデータ
         self.is_updating = False  # 更新中フラグ
         self.start_check = False  # スタート状態をチェックするフラグ
-        
-        # 出力データを格納するリスト
-        self.Rtime_output = []
-        self.RRI_output = []
-        self.HR_output = []
-        self.DBP_output = []
-        self.DBPtime_output = []
-        self.SBP_output = []
-        self.SBPtime_output = []
-        self.MSNAtime_output = []
-        self.MSNAheight_output = []
-        self.MSNAAera_output = []
-        self.Burst_output = []
 
         # プロットの初期化
         pg.setConfigOptions(antialias=True) # アンチエイリアスを有効にする
@@ -215,6 +203,18 @@ class MSNAApp:
 
     def restart(self):
         """ファイル選択ときの処理"""
+        # 出力データを格納するリスト
+        self.Rtime_output = []
+        self.RRI_output = []
+        self.HR_output = []
+        self.DBP_output = []
+        self.DBPtime_output = []
+        self.SBP_output = []
+        self.SBPtime_output = []
+        self.MSNAtime_output = []
+        self.MSNAheight_output = []
+        self.MSNAAera_output = []
+        self.Burst_output = []
         self.count = 0
         self.drawCalculation(0)
         self.region = pg.LinearRegionItem([0.5 * self.fs, 1.5 * self.fs])
