@@ -198,7 +198,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Only the .txt file of the 3-column data (ECG, BP, MSNA).</string>
+        <string>Only the .txt file of the 3-column data (ECG, BP, iMSNA).</string>
        </property>
        <property name="readOnly">
         <bool>true</bool>
